@@ -43,3 +43,5 @@ Thumbs.db
 
 backend/celery.log
 backend/flask.log
+
+seed.py
