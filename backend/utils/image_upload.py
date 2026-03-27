@@ -27,6 +27,7 @@ def upload_image(file, upload_folder, use_cloudinary=False, cloudinary_config=No
                 file,
                 folder="trashtreasure",
                 transformation=[{"width": 800, "crop": "limit"}],
+                timeout=60,
             )
             return result["secure_url"]
         except Exception as e:
