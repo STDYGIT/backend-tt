@@ -66,7 +66,7 @@
               <div class="relative flex items-center">
                 <span class="absolute left-4 text-gray-400">👤</span>
                 <input v-model="name" type="text" class="input pl-12 font-semibold bg-gray-50/50"
-                  placeholder="e.g. John Doe" required autofocus>
+                  placeholder="e.g. Jatin & Kamal" required autofocus>
               </div>
             </div>
             <div>
