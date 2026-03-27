@@ -1,9 +1,14 @@
+import socket
 from flask_mail import Message
 from extensions import mail
 
+# Fix for Render Free Tier blocking: 
+# Force SMTP socket to give up in 5 seconds instead of letting Gunicorn kill the worker at 30s.
+socket.setdefaulttimeout(5.0)
 
 def send_otp_email(to_email: str, otp: str):
     """Send OTP verification email synchronously via Flask-Mail."""
+    print(f"[DEBUG] Generated OTP for {to_email}: {otp}")
     try:
         msg = Message(
             subject="TrashTreasure — Your Verification Code",

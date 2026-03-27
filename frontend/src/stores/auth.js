@@ -42,13 +42,16 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('tt_user')
   }
 
-  // ─── Registration flow ────────────────────────────────────────────────────
+  // ─── Registration flow (Stateless) ───────────────────────────────────────
+  const otpToken = ref(null)
+  const verifiedToken = ref(null)
 
   async function requestOtp(email) {
     loading.value = true
     error.value = null
     try {
       const { data } = await api.post('/api/auth/request-otp', { email })
+      otpToken.value = data.otp_token
       return data
     } catch (e) {
       error.value = e.response?.data?.error || 'Failed to send OTP'
@@ -62,11 +65,12 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-      const { data } = await api.post('/api/auth/verify-otp', { email, otp })
-      // Only set session if they don't need to set a password
-      if (!data.needs_password) {
-        _setSession(data)
-      }
+      const { data } = await api.post('/api/auth/verify-otp', { 
+        email, 
+        otp, 
+        otp_token: otpToken.value 
+      })
+      verifiedToken.value = data.verified_token
       return data
     } catch (e) {
       error.value = e.response?.data?.error || 'Invalid OTP'
@@ -76,15 +80,23 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function setPassword(email, password, confirm_password) {
+  async function setPassword(email, name, password) {
     loading.value = true
     error.value = null
     try {
-      const { data } = await api.post('/api/auth/set-password', { email, password, confirm_password })
+      const { data } = await api.post('/api/auth/register-final', { 
+        email, 
+        name,
+        password, 
+        verified_token: verifiedToken.value 
+      })
       _setSession(data)
+      // Clear temp tokens
+      otpToken.value = null
+      verifiedToken.value = null
       return data
     } catch (e) {
-      error.value = e.response?.data?.error || 'Failed to set password'
+      error.value = e.response?.data?.error || 'Failed to create account'
       throw e
     } finally {
       loading.value = false

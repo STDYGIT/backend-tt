@@ -57,12 +57,20 @@
           </button>
         </form>
 
-        <!-- Step 3: Set Password -->
+        <!-- Step 3: Set Password & Profile -->
         <form v-else-if="step === 3" @submit.prevent="handleSetPassword" class="animate-fadeInUp">
-          <p class="text-sm font-bold text-gray-700 mb-4">Step 3: Set your password</p>
+          <p class="text-sm font-bold text-gray-700 mb-4">Final Step: Complete your profile</p>
           <div class="space-y-4">
             <div>
-              <label class="label mb-2 text-primary-900">Password</label>
+              <label class="label mb-2 text-primary-900">Your Full Name</label>
+              <div class="relative flex items-center">
+                <span class="absolute left-4 text-gray-400">👤</span>
+                <input v-model="name" type="text" class="input pl-12 font-semibold bg-gray-50/50"
+                  placeholder="e.g. John Doe" required autofocus>
+              </div>
+            </div>
+            <div>
+              <label class="label mb-2 text-primary-900">Create Password</label>
               <div class="relative flex items-center">
                 <span class="absolute left-4 text-gray-400">🔒</span>
                 <input v-model="password" :type="showPass ? 'text' : 'password'" class="input pl-12 pr-12 font-semibold bg-gray-50/50"
@@ -82,7 +90,7 @@
               <p v-if="confirmPassword && password !== confirmPassword" class="text-xs text-red-500 mt-1 font-medium">Passwords do not match</p>
             </div>
           </div>
-          <button type="submit" class="btn-primary w-full mt-6 py-3.5 text-base shadow-lg shadow-primary-500/20" :disabled="loading || !password || password !== confirmPassword">
+          <button type="submit" class="btn-primary w-full mt-6 py-3.5 text-base shadow-lg shadow-primary-500/20" :disabled="loading || !name || !password || password !== confirmPassword">
             <span v-if="loading" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block"></span>
             <span v-else>Create Account</span>
           </button>
@@ -107,6 +115,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const step = ref(1)
+const name = ref('')
 const email = ref('')
 const otp = ref('')
 const password = ref('')
@@ -137,15 +146,9 @@ async function handleVerifyOtp() {
   error.value = null
   success.value = null
   try {
-    const res = await authStore.verifyOtp(email.value, otp.value)
-    if (!res.needs_password) {
-      // Already has password (returning user), go to dashboard
-      if (res.user?.role === 'admin') router.push('/admin/dashboard')
-      else router.push('/dashboard')
-    } else {
-      success.value = 'Email verified! Now set your password.'
-      step.value = 3
-    }
+    await authStore.verifyOtp(email.value, otp.value)
+    success.value = 'Email verified! Now complete your profile.'
+    step.value = 3
   } catch (e) {
     error.value = e.response?.data?.error || 'Invalid code. Please try again.'
   } finally {
@@ -157,11 +160,11 @@ async function handleSetPassword() {
   loading.value = true
   error.value = null
   try {
-    const data = await authStore.setPassword(email.value, password.value, confirmPassword.value)
+    const data = await authStore.setPassword(email.value, name.value, password.value)
     if (data.user?.role === 'admin') router.push('/admin/dashboard')
     else router.push('/dashboard')
   } catch (e) {
-    error.value = e.response?.data?.error || 'Failed to set password.'
+    error.value = e.response?.data?.error || 'Failed to create account.'
   } finally {
     loading.value = false
   }
