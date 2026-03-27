@@ -37,7 +37,8 @@ class Config:
     MAIL_USE_TLS = True
     MAIL_USERNAME = os.getenv("MAIL_USERNAME", "")
     MAIL_PASSWORD = os.getenv("MAIL_PASSWORD", "")
-    MAIL_DEFAULT_SENDER = os.getenv("MAIL_USERNAME", "noreply@trashtreasure.com")
+    MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER", "noreply@acedca.in")
 
     # Resend (Production alternative)
     RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+    print(f"[Config] RESEND_API_KEY loaded: {'YES' if RESEND_API_KEY else 'NO'}")

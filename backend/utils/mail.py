@@ -15,11 +15,13 @@ def send_otp_email(to_email: str, otp: str):
     
     # Priority 1: Resend (Best for Render Production)
     resend_key = current_app.config.get("RESEND_API_KEY")
+    print(f"[Debug Mail] RESEND_API_KEY in config: {'YES' if resend_key else 'NO'}")
     if resend_key:
         try:
             resend.api_key = resend_key
+            sender = current_app.config.get("MAIL_DEFAULT_SENDER", "onboarding@resend.dev")
             params = {
-                "from": "TrashTreasure <onboarding@resend.dev>",
+                "from": f"TrashTreasure <{sender}>",
                 "to": [to_email],
                 "subject": "TrashTreasure — Your Verification Code",
                 "html": f"""
