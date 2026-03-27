@@ -57,10 +57,10 @@ def request_otp():
         "otp_token": otp_token,
     }
     
-    if not sent:
-        # Debug/fallback for development
+    # Only show debug info if NOT in production
+    if not sent and current_app.config.get("FLASK_ENV") != "production":
         response["debug_otp"] = otp
-        response["warning"] = "Email delivery failed. OTP is in the 'debug_otp' field."
+        response["warning"] = "Email delivery failed. OTP is in the 'debug_otp' field (Dev Only)."
 
     return jsonify(response), 200
 
