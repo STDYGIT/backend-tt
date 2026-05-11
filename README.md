@@ -80,4 +80,3 @@ To prevent "Ghost Users" (unverified accounts) from filling our database, we use
 
 ## 👥 Contributors
 Developed with a mission to clean the planet by **Jatin & Kamal**. 🌍
-助力地球每一份资源都被重新利用。
